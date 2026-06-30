@@ -67,18 +67,17 @@ html,body{width:100%;min-height:100%}
 
 .hint{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5;max-width:80ch}
 
-.sheet{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:30px 32px;overflow-x:auto;margin-bottom:28px}
-.line{margin-bottom:2px;width:max-content;min-width:100%}
-.chord-row{position:relative;height:1.55em;line-height:1}
-.lyric-row{position:relative;white-space:pre;line-height:1.7}
-.chord{position:absolute;bottom:0;transform:translateX(-1px);white-space:nowrap;font-family:inherit;font-weight:600;font-size:.92em;color:var(--chord);background:var(--chord-bg);border:1px solid var(--chord-border);border-radius:4px;padding:0 5px 1px;cursor:pointer}
-.chord::after{content:"";position:absolute;left:4px;bottom:-5px;width:1px;height:5px;background:var(--chord);opacity:.4}
-.chord:hover{background:rgba(26,80,216,0.16)}
-.chord-popup{position:absolute;bottom:-2px;white-space:nowrap;font-family:inherit;font-weight:600;font-size:.92em;color:var(--violet);background:var(--surface);border:1.5px solid var(--violet);border-radius:5px;padding:2px 5px;width:74px;outline:none}
-.lch{cursor:pointer;border-radius:2px}
+.sheet{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:30px 32px;overflow-x:hidden;margin-bottom:28px}
+.line{position:relative;margin-bottom:4px;white-space:normal;overflow-wrap:break-word;min-width:0}
+.word{display:inline-block;white-space:nowrap;vertical-align:top}
+.lch{position:relative;display:inline-block;vertical-align:top;padding-top:1.5em;white-space:pre;line-height:1.3;cursor:text;border-radius:2px}
 .lch:hover{background:var(--chord-bg)}
 .lch.marked{box-shadow:inset 0 -2px 0 var(--chord)}
 .lch.cursor{background:var(--violet-bg);box-shadow:inset 0 -2px 0 var(--violet)}
+.lch.end{min-width:4px}
+.chord{position:absolute;top:0;left:0;white-space:nowrap;font-family:inherit;font-weight:600;font-size:.92em;line-height:1.25;color:var(--chord);background:var(--chord-bg);border:1px solid var(--chord-border);border-radius:4px;padding:0 5px 1px;cursor:pointer;z-index:2}
+.chord:hover{background:rgba(26,80,216,0.16)}
+.chord-popup{position:absolute;top:-2px;left:0;white-space:nowrap;font-family:inherit;font-weight:600;font-size:.92em;color:var(--violet);background:var(--surface);border:1.5px solid var(--violet);border-radius:5px;padding:2px 5px;width:74px;outline:none;z-index:3}
 
 .emptyline{padding:5px 0;line-height:1.6}
 .addinstr{background:transparent;border:1px dashed var(--border);border-radius:7px;color:var(--muted);font:600 12px/1 var(--ui);padding:7px 11px;cursor:pointer}
@@ -110,7 +109,7 @@ html,body{width:100%;min-height:100%}
 .diagram-opt.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
 .diagram-empty{color:var(--muted);font-size:13px;padding:16px 0 4px}
 .diagrams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px;margin-top:18px}
-.diagram-card{padding:14px 10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;text-align:center}
+.diagram-card{padding:14px 10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;text-align:center;color:var(--text)}
 .diagram-chord-name{font-family:var(--mono);font-weight:700;font-size:15px;margin-bottom:10px}
 .diagram-unknown{color:var(--muted);font-size:12px;padding:20px 0}
 .diagram-svg-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
@@ -207,8 +206,9 @@ html,body{width:100%;min-height:100%}
 .live-bpm{width:118px;background:#2a2f3a;border:1px solid #3a3f4b;border-radius:7px;padding:8px 10px;font:500 13px/1 var(--ui);color:#ECE9E3}
 .live-bpm::placeholder{color:#7a808c}
 .live-zoom{accent-color:var(--chord)}
-.live-scroller{flex:1;overflow-y:auto;padding:40px 30px 72vh;background:#14161b}
-.live-inner{transform-origin:top left;width:max-content}
+.live-scroller{flex:1;overflow-y:auto;overflow-x:hidden;padding:40px 30px 72vh;background:#14161b}
+.live-inner{transform-origin:top left}
+.live-overlay .sheet-fullw{width:100%}
 .live-title{font-family:var(--display);font-style:italic;font-weight:700;font-size:1.5em;margin-bottom:22px;color:#fff}
 /* tema scuro per il contenuto clonato */
 .live-overlay .sheet{background:transparent;border:none;padding:0;margin:0;box-shadow:none}
@@ -223,7 +223,168 @@ html,body{width:100%;min-height:100%}
   .main{padding:24px 16px 40px}
   .diagrams-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 }
+
+/* ===== DARK MODE ===== */
+html.dark{
+  --bg:#14161b; --surface:#1d2026; --raised:#262a32; --border:#363c46;
+  --text:#ECE9E3; --muted:#9aa0ac; --chord:#6fa3ff; --chord-bg:rgba(111,163,255,.14);
+  --chord-border:rgba(111,163,255,.34); --red:#e8675a; --violet:#9b78f0; --violet-bg:rgba(155,120,240,.16);
+}
+html.dark body{background:var(--bg)}
+/* diagrammi chitarra: linee/punti/scritte chiari in dark mode (usano currentColor) */
+html.dark .diagram-card{color:#ECE9E3}
+html.dark .diagram-card svg{color:#ECE9E3}
+html{transition:background .3s}
+.root,.nav,.sheet,.toolbar,.dlg,.diagram-section,.instr-block,.textarea,.diagram-audio{transition:background .3s,border-color .3s,color .3s}
+
+/* ===== THEME TOGGLE (sole/luna) ===== */
+.theme-toggle{position:fixed;bottom:20px;right:20px;z-index:1500;width:46px;height:46px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.16);transition:transform .2s,background .25s,border-color .25s}
+.theme-toggle:hover{transform:scale(1.09)}
+.theme-toggle:active{transform:scale(.9)}
+.theme-toggle .ti{position:absolute;font-size:20px;line-height:1;transition:opacity .3s,transform .45s cubic-bezier(.4,0,.2,1)}
+.theme-toggle .ti-sun{color:#E0A93A;opacity:1;transform:rotate(0) scale(1)}
+.theme-toggle .ti-moon{color:#9bb0ff;opacity:0;transform:rotate(-90deg) scale(.4)}
+html.dark .theme-toggle .ti-sun{opacity:0;transform:rotate(90deg) scale(.4)}
+html.dark .theme-toggle .ti-moon{opacity:1;transform:rotate(0) scale(1)}
+
+/* ===== ANIMAZIONI switch + icone ===== */
+.switch-track,.switch-mini-track,.switch-mini-knob,.switch-knob{transition:background .25s ease,transform .25s cubic-bezier(.34,1.56,.64,1)}
+.pill-btn,.btn-ghost,.btn-primary,.live-speed-btn,.live-ctrl-btn,.diagram-selector button,.instr-icon-btn,.play-btn,.color-inp{transition:background .18s,color .18s,border-color .18s,box-shadow .18s,transform .12s}
+.pill-btn:active,.btn-ghost:active,.btn-primary:active,.live-speed-btn:active,.instr-icon-btn:active{transform:scale(.93)}
+.color-inp:active{transform:scale(.88)}
+.diagram-selector button:active{transform:scale(.95)}
+
+/* ===== MENU A TENDINA / HAMBURGER / DROPDOWN ===== */
+.menu-wrap{position:relative;display:inline-block}
+.menu-panel{position:absolute;top:calc(100% + 7px);right:0;min-width:210px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 14px 38px rgba(0,0,0,.20);padding:7px;z-index:1300;display:none;flex-direction:column;gap:2px}
+.menu-wrap.open .menu-panel{display:flex;animation:menuIn .16s ease}
+@keyframes menuIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.menu-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:8px;background:none;border:none;color:var(--text);font:500 13.5px/1.2 var(--ui);cursor:pointer;text-align:left;width:100%;transition:background .15s}
+.menu-item:hover{background:var(--raised)}
+.menu-ico{display:inline-flex;width:20px;justify-content:center;font-size:15px;flex-shrink:0}
+.menu-row{display:flex;align-items:center;gap:11px;padding:8px 12px}
+.menu-row .lang-select{flex:1}
+.caret{font-size:10px;opacity:.7;margin-left:2px}
+.hamburger-btn{width:42px;height:38px;border:1px solid var(--border);background:var(--raised);border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,transform .12s}
+.hamburger-btn:hover{background:var(--border)}
+.hamburger-btn:active{transform:scale(.93)}
+.ham-ico{display:inline-flex;flex-direction:column;gap:4px;width:18px}
+.ham-ico span{display:block;height:2px;border-radius:2px;background:var(--text);transition:transform .25s,opacity .25s}
+.menu-wrap.open .ham-ico span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.menu-wrap.open .ham-ico span:nth-child(2){opacity:0}
+.menu-wrap.open .ham-ico span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.dl-panel,.ham-panel{min-width:210px}
+.ham-left{left:0;right:auto}
+/* pannello Sezioni della canzone */
+.sec-panel{min-width:250px;padding:10px}
+.sec-menu-row{padding:6px 4px}
+.sections-rows{display:flex;flex-direction:column;gap:3px;margin:4px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:8px 0}
+.section-row{display:flex;align-items:center;gap:11px;padding:6px 6px;border-radius:8px;cursor:pointer;transition:background .15s}
+.section-row:hover{background:var(--raised)}
+.section-row-name{font:600 13px/1 var(--mono);color:var(--text);letter-spacing:.02em}
+.sec-menu-btn .caret{margin-left:5px}
+/* barra inferiore Copia/Cancella */
+.bottom-bar{position:sticky;bottom:0;display:flex;gap:12px;justify-content:center;padding:12px 16px;margin:8px -4px 0;background:var(--surface);background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--border);border-radius:12px 12px 0 0;z-index:80}
+.bottom-bar .btn-ghost{font-weight:600}
+.bottom-bar .danger{color:var(--red);border-color:var(--border)}
+@media (max-width:680px){
+  .menu-panel{right:auto;left:0}
+  .bottom-bar{position:fixed;left:0;right:0;bottom:0;margin:0;border-radius:0}
+}
+
+/* ===================================================================
+   NEOMORFISMO + GLASSMORPHISM  (adattivo chiaro/scuro, leggibile)
+   =================================================================== */
+:root{
+  --nm-light:rgba(255,255,255,.9);
+  --nm-dark:rgba(178,168,150,.42);
+  --glass-bg:rgba(253,252,249,.80);
+  --glass-brd:rgba(255,255,255,.6);
+  --glass-blur:14px;
+}
+html.dark{
+  --nm-light:rgba(255,255,255,.05);
+  --nm-dark:rgba(0,0,0,.58);
+  --glass-bg:rgba(29,32,38,.74);
+  --glass-brd:rgba(255,255,255,.10);
+}
+
+/* --- superfici a rilievo morbido --- */
+.sheet,.diagram-section,.instr-block,.song-title-wrap,.editbox{
+  border:1px solid transparent;
+  box-shadow:6px 6px 16px var(--nm-dark),-6px -6px 16px var(--nm-light);
+}
+.diagram-card,.diagram-audio,.diagram-instr{
+  border-color:transparent;
+  box-shadow:4px 4px 11px var(--nm-dark),-4px -4px 11px var(--nm-light);
+}
+
+/* --- controlli a rilievo --- */
+.btn-ghost,.btn-primary,.pill-btn,.tab,.hamburger-btn,.lang-select,.live-speed-btn,.live-ctrl-btn,.live-back,.theme-toggle,.fake-select,.color-inp,.play-btn,.instr-icon-btn,.diagram-selector{
+  box-shadow:3px 3px 7px var(--nm-dark),-3px -3px 7px var(--nm-light);
+  border-color:transparent;
+}
+.btn-ghost:hover,.btn-primary:hover,.pill-btn:hover,.hamburger-btn:hover,.theme-toggle:hover{
+  box-shadow:4px 4px 9px var(--nm-dark),-4px -4px 9px var(--nm-light);
+}
+.btn-ghost:active,.btn-primary:active,.pill-btn:active,.tab:active,.hamburger-btn:active,.live-speed-btn:active,.theme-toggle:active,.instr-icon-btn:active,.play-btn:active{
+  box-shadow:inset 2px 2px 5px var(--nm-dark),inset -2px -2px 5px var(--nm-light);
+}
+.tab.active,.live-speed-btn.on,.diagram-selector button.active{
+  box-shadow:inset 2px 2px 6px var(--nm-dark),inset -2px -2px 6px var(--nm-light);
+}
+
+/* --- campi e tracce incassati --- */
+.textarea,.instr-seq,.instr-label,.fr-input,.song-title,.live-bpm{
+  border-color:transparent;
+  box-shadow:inset 3px 3px 7px var(--nm-dark),inset -3px -3px 7px var(--nm-light);
+}
+.switch-track,.switch-mini-track{
+  box-shadow:inset 2px 2px 4px var(--nm-dark),inset -1px -1px 3px var(--nm-light);
+}
+
+/* --- vetro (glassmorphism) su nav, modali, menu, barra --- */
+.nav{
+  position:sticky;top:0;z-index:200;
+  background:var(--surface);
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.4);
+  backdrop-filter:blur(var(--glass-blur)) saturate(1.4);
+  border-bottom:1px solid var(--glass-brd);
+}
+.menu-panel,.dlg{
+  background:var(--surface);
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.4);
+  backdrop-filter:blur(var(--glass-blur)) saturate(1.4);
+  border:1px solid var(--glass-brd);
+  box-shadow:0 18px 48px rgba(0,0,0,.22),inset 0 1px 0 var(--glass-brd);
+}
+.overlay{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.bottom-bar{background:var(--surface);background:var(--glass-bg)}
+.theme-toggle{background:var(--glass-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 </style>
+<script>"use strict";
+/* ===== DARK MODE: toggle + persistenza ===== */
+(function(){
+  var KEY="cyl_theme";
+  var saved=null;try{saved=localStorage.getItem(KEY);}catch(e){}
+  if(saved==="dark")document.documentElement.classList.add("dark");
+  function makeBtn(){
+    if(document.getElementById("theme-toggle"))return;
+    var btn=document.createElement("button");
+    btn.id="theme-toggle";btn.className="theme-toggle";btn.type="button";
+    btn.setAttribute("aria-label","Dark mode");btn.title="Dark mode";
+    btn.innerHTML='<span class="ti ti-sun">\u2600</span><span class="ti ti-moon">\u263E</span>';
+    btn.addEventListener("click",function(){
+      var dark=document.documentElement.classList.toggle("dark");
+      try{localStorage.setItem(KEY,dark?"dark":"light");}catch(e){}
+    });
+    document.body.appendChild(btn);
+  }
+  if(document.body)makeBtn();else document.addEventListener("DOMContentLoaded",makeBtn);
+})();
+</script>
 </head>
 <body>
 <div class="root" id="root"></div>
@@ -582,6 +743,65 @@ function renderApp(){
   if(state.mode==="chords")rebuildSheet();
 }
 
+/* ===== Menu a tendina generici (opachi, ancorati) ===== */
+var _menuWired=false;
+function ensureMenuClose(){if(_menuWired)return;_menuWired=true;document.addEventListener("click",closeAllMenus);}
+function closeAllMenus(){var ms=document.querySelectorAll(".menu-wrap.open");for(var i=0;i<ms.length;i++)ms[i].classList.remove("open");}
+function buildMenu(triggerHTML,triggerClass,items,panelClass){
+  ensureMenuClose();
+  var wrap=h("div",{class:"menu-wrap"});
+  var btn=h("button",{class:triggerClass,type:"button",onClick:function(e){e.stopPropagation();var was=wrap.classList.contains("open");closeAllMenus();if(!was)wrap.classList.add("open");}});
+  btn.innerHTML=triggerHTML;
+  var panel=h("div",{class:"menu-panel"+(panelClass?" "+panelClass:"")});
+  panel.addEventListener("click",function(e){e.stopPropagation();});
+  items.forEach(function(it){if(it)panel.appendChild(it);});
+  wrap.appendChild(btn);wrap.appendChild(panel);
+  return wrap;
+}
+function menuItem(label,onClick,icon){
+  var b=h("button",{class:"menu-item",type:"button",onClick:function(e){e.stopPropagation();closeAllMenus();onClick();}});
+  if(icon)b.appendChild(h("span",{class:"menu-ico"},icon));
+  b.appendChild(h("span",null,label));
+  return b;
+}
+function langRow(){
+  var sel=h("select",{class:"lang-select"});
+  sel.addEventListener("change",function(){state.lang=sel.value;closeAllMenus();renderApp();});
+  LANG_ORDER.forEach(function(code){var op=h("option",{value:code},I18N[code].lname);if(code===state.lang)op.selected=true;sel.appendChild(op);});
+  return h("div",{class:"menu-row"},h("span",{class:"menu-ico"},"\uD83C\uDF10"),sel);
+}
+function openAbout(){
+  var dlg=h("div",{class:"dlg"},
+    h("div",{class:"dlg-title"},T("about")),
+    h("p",{style:{margin:"14px 0 2px",font:"400 14px/1.6 var(--ui)",color:"var(--text)"}},T("aboutBody")),
+    h("div",{class:"dlg-actions"},h("button",{class:"btn-primary",onClick:closeOverlay},T("close")))
+  );
+  showOverlay(dlg);
+}
+function importFile(){
+  var inp=document.createElement("input");
+  inp.type="file";inp.accept=".txt,.text,text/plain";inp.style.display="none";
+  inp.addEventListener("change",function(){
+    var f=inp.files&&inp.files[0];
+    if(f){
+      var name=(f.name||"").toLowerCase();
+      if(!/\.(txt|text)$/.test(name)&&f.type!=="text/plain"){flash(T("importErr"));}
+      else{
+        var r=new FileReader();
+        r.onload=function(){
+          var old=state.rawText;
+          state.rawText=String(r.result||"").replace(/\r\n/g,"\n");
+          reanchorChords(old);pruneInstrumentals();scheduleSave();renderApp();flash(T("importOk"));
+        };
+        r.onerror=function(){flash(T("importErr"));};
+        r.readAsText(f);
+      }
+    }
+    if(inp.parentNode)inp.parentNode.removeChild(inp);
+  });
+  document.body.appendChild(inp);inp.click();
+}
+
 function buildNav(){
   function tab(label,m){
     var b=h("button",{class:"tab"+(state.mode===m?" active":""),onClick:function(){
@@ -594,21 +814,19 @@ function buildNav(){
   var actions=h("div",{class:"nav-actions"});
   if(state.mode==="chords"){
     actions.appendChild(h("span",{class:"key-display",id:"key-display"}));
-    actions.appendChild(h("button",{class:"btn-ghost sm",onClick:openLive},"▶ "+T("live")));
-    actions.appendChild(h("button",{class:"btn-ghost sm",onClick:copyText},T("copy")));
-    actions.appendChild(h("button",{class:"btn-ghost sm",onClick:downloadText},T("txt")));
-    actions.appendChild(h("button",{class:"btn-primary sm",onClick:exportPDF},T("pdf")));
-    actions.appendChild(h("button",{class:"btn-ghost sm danger",onClick:clearAll},T("clear")));
+    actions.appendChild(buildMenu(T("download")+' <span class="caret">&#9662;</span>',"btn-ghost sm dl-btn",
+      [menuItem("PDF",exportPDF,"\uD83D\uDCC4"),menuItem("TXT",downloadText,"\uD83D\uDCDD")],"dl-panel"));
   }
-  var sel=h("select",{class:"lang-select","aria-label":T("language"),onChange:function(){state.lang=sel.value;renderApp();}});
-  LANG_ORDER.forEach(function(code){
-    var op=h("option",{value:code},I18N[code].lname);
-    if(code===state.lang)op.selected=true;
-    sel.appendChild(op);
-  });
-  actions.appendChild(h("button",{class:"btn-ghost sm",onClick:openHelp,title:T("help")},"❔ "+T("help")));
-  actions.appendChild(sel);
+  var hamItems=[
+    menuItem(T("about"),openAbout,"\u24D8"),
+    menuItem(T("live"),openLive,"\u25B6"),
+    menuItem(T("help"),openHelp,"\u2754"),
+    menuItem(T("importF"),importFile,"\uD83D\uDCC2"),
+    langRow()
+  ];
+  var hamburger=buildMenu('<span class="ham-ico"><span></span><span></span><span></span></span>',"hamburger-btn",hamItems,"ham-panel ham-left");
   return h("nav",{class:"nav"},
+    hamburger,
     h("div",{class:"nav-logo",onClick:openReset,style:{cursor:"pointer"}},h("img",{class:"nav-logo-icon",src:LOGO_ICON,alt:""}),h("img",{class:"nav-logo-word",src:LOGO_WORD,alt:"Chord Your Lyrics"})),
     h("div",{class:"nav-tabs"},tab(T("text"),"edit"),tab(T("chords"),"chords")),
     h("div",{class:"nav-spacer"}),
@@ -637,6 +855,8 @@ function buildEditView(){
   var dropHint=h("p",{class:"drop-hint"},T("dropHint"));
   var kids=[];
   if(!hasText())kids.push(h("button",{class:"btn-ghost",onClick:loadSample},T("sample")));
+  kids.push(h("button",{class:"btn-ghost",onClick:copyText},"⧉ "+T("copy")));
+  kids.push(h("button",{class:"btn-ghost danger",onClick:clearAll},"✕ "+T("clear")));
   kids.push(h("button",{class:"btn-primary",onClick:function(){
     if(!hasText()){flash(T("pasteFirst"));return;}
     state.mode="chords";renderApp();
@@ -680,18 +900,20 @@ function buildChordsView(){
       c.addEventListener("change",function(){state.highlight=c.checked;rebuildSheet();});return c;})(),
     h("span",{class:"switch-track"}),h("span",{class:"toolbar-label"},T("hl")));
   var SEC_TYPES=[["intro","Intro"],["verse","Verse"],["prechorus","Pre-Chorus"],["chorus","Chorus"],["bridge","Bridge"],["outro","Outro"]];
-  var secColors=h("div",{class:"sec-colors"});
+  var sectionRows=h("div",{class:"sections-rows"});
   SEC_TYPES.forEach(function(t){
-    var ci=h("input",{type:"color",value:(state.sectionColors&&state.sectionColors[t[0]])||"#E6B8A2",class:"color-inp sm","aria-label":t[1]});
+    var ci=h("input",{type:"color",value:(state.sectionColors&&state.sectionColors[t[0]])||"#E6B8A2",class:"color-inp","aria-label":t[1]});
     ci.addEventListener("input",function(){state.sectionColors[t[0]]=ci.value;if(state.highlight)rebuildSheet();else scheduleSave();});
-    secColors.appendChild(h("label",{class:"sec-color-item"},h("span",{class:"sec-color-name"},t[1]),ci));
+    sectionRows.appendChild(h("label",{class:"section-row"},ci,h("span",{class:"section-row-name"},"["+t[1]+"]")));
   });
   var opVal=h("span",{class:"vol-pct"},Math.round((state.sectionOpacity==null?0.3:state.sectionOpacity)*100)+"%");
   var opInp=h("input",{type:"range",min:"10",max:"70",value:String(Math.round((state.sectionOpacity==null?0.3:state.sectionOpacity)*100)),class:"vol-slider","aria-label":"Opacity"});
   opInp.addEventListener("input",function(){state.sectionOpacity=(+opInp.value)/100;opVal.textContent=opInp.value+"%";if(state.highlight)rebuildSheet();else scheduleSave();});
   var opGroup=h("div",{class:"sec-opacity"},h("span",{class:"sec-color-name"},"Opacità"),opInp,opVal);
+  var secMenu=buildMenu(T("sectionsTitle")+' <span class="caret">&#9662;</span>',"btn-ghost sm sec-menu-btn",
+    [h("div",{class:"sec-menu-row"},hlToggle), sectionRows, h("div",{class:"sec-menu-row"},opGroup)],"sec-panel");
   var toolbar2=h("div",{class:"toolbar toolbar2"},
-    h("div",{class:"toolbar-group sec-hl-group"},hlToggle,secColors,opGroup),
+    h("div",{class:"toolbar-group"},secMenu),
     h("div",{class:"toolbar-sep"}),
     h("button",{class:"btn-ghost sm",onClick:openReplace},T("find"))
   );
@@ -705,12 +927,29 @@ function buildChordsView(){
 
 /* ===== Foglio ===== */
 function buildLyricLine(li,line){
-  var chr=h("div",{class:"chord-row",id:"chr-"+li});
-  var lyr=h("div",{class:"lyric-row",id:"lyr-"+li});
+  var lineEl=h("div",{class:"line",id:"lyr-"+li});
+  var word=null;
   for(var ci=0;ci<line.length;ci++){
-    (function(ci){lyr.appendChild(h("span",{class:"lch",onClick:function(){openChordEditor(li,ci);}},line.charAt(ci)));})(ci);
+    (function(ci){
+      var ch=line.charAt(ci);
+      var cell=h("span",{class:"lch"},ch===""?" ":ch);
+      cell._ci=ci;
+      cell.addEventListener("click",function(e){if(e.target===cell)openChordEditor(li,ci);});
+      if(ch===" "){
+        word=null;
+        lineEl.appendChild(cell);
+        lineEl.appendChild(document.createElement("wbr"));
+      }else{
+        if(!word){word=h("span",{class:"word"});lineEl.appendChild(word);}
+        word.appendChild(cell);
+      }
+    })(ci);
   }
-  return h("div",{class:"line"},chr,lyr);
+  var endCell=h("span",{class:"lch end"}," ");
+  endCell._ci=line.length;
+  endCell.addEventListener("click",function(e){if(e.target===endCell)openChordEditor(li,line.length);});
+  lineEl.appendChild(endCell);
+  return lineEl;
 }
 function buildEmptyLine(li){
   return h("div",{class:"emptyline"},h("button",{class:"addinstr",onClick:function(){convertToInstrumental(li);}},"♩ "+T("addInstr")));
@@ -789,31 +1028,34 @@ function fillSheet(){
   });
   lines.forEach(function(line,li){
     if(state.instrumentals[li]||line.length===0||isSection(line))return;
-    var row=document.getElementById("lyr-"+li);if(!row)return;
-    var arr=[],sp=row.children;
-    for(var k=0;k<sp.length;k++)arr.push(sp[k].offsetLeft);
-    if(sp.length){var last=sp[sp.length-1];arr.push(last.offsetLeft+last.offsetWidth);}else arr.push(0);
+    var lineEl=document.getElementById("lyr-"+li);if(!lineEl)return;
+    var cells=lineEl.querySelectorAll(".lch");
+    var arr=[],x=0;
+    for(var k=0;k<cells.length;k++){arr.push(x);x+=cells[k].offsetWidth;}
     state.charPos[li]=arr;
     refreshLineChords(li);
   });
 }
 
 function refreshLineChords(li){
-  var chr=document.getElementById("chr-"+li);if(!chr)return;
-  chr.innerHTML="";
-  var pos=state.charPos[li]||[],line=lineAt(li);
+  var lineEl=document.getElementById("lyr-"+li);if(!lineEl)return;
+  var old=lineEl.querySelectorAll(".chord,.chord-popup");
+  for(var x=0;x<old.length;x++)if(old[x].parentNode)old[x].parentNode.removeChild(old[x]);
+  var cells=lineEl.querySelectorAll(".lch"),line=lineAt(li);
   Object.keys(state.chords).forEach(function(key){
     var p=key.split("-"),l=+p[0],c=+p[1];
     if(l!==li||c>Math.max(0,line.length))return;
     if(state.editing&&state.editing.li===li&&state.editing.ci===c)return;
+    var cell=cells[c]||cells[cells.length-1];if(!cell)return;
     var sel=state.selectedChord&&state.selectedChord.li===li&&state.selectedChord.ci===c;
-    var btn=h("button",{class:"chord"+(sel?" selected":""),style:{left:(pos[c]||0)+"px"}},chordText(li,c));
+    var btn=h("button",{class:"chord"+(sel?" selected":"")},chordText(li,c));
     attachChordDrag(btn,li,c);
-    chr.appendChild(btn);
+    cell.appendChild(btn);
   });
   if(state.editing&&state.editing.li===li){
     var ci=state.editing.ci;
-    var inp=h("input",{class:"chord-popup",placeholder:T("chordPh"),style:{left:(pos[ci]||0)+"px"}});
+    var cell2=cells[ci]||cells[cells.length-1];
+    var inp=h("input",{class:"chord-popup",placeholder:T("chordPh")});
     inp.value=chordText(li,ci)||"";
     inp.addEventListener("input",function(){acShow(inp);});
     inp.addEventListener("keydown",function(e){
@@ -823,14 +1065,12 @@ function refreshLineChords(li){
       else if(e.key==="Escape"){if(acBox){acClose();}else cancelChord();}
     });
     inp.addEventListener("blur",function(){setTimeout(function(){acClose();commitChord();},120);});
-    chr.appendChild(inp);
+    if(cell2)cell2.appendChild(inp);
     setTimeout(function(){inp.focus();inp.select();acShow(inp);},0);
   }
-  var lyr=document.getElementById("lyr-"+li);
-  if(lyr)for(var i=0;i<lyr.children.length;i++){
-    var sp=lyr.children[i];
-    if(chordText(li,i))sp.classList.add("marked");else sp.classList.remove("marked");
-    if(state.editing&&state.editing.li===li&&state.editing.ci===i)sp.classList.add("cursor");else sp.classList.remove("cursor");
+  for(var i=0;i<cells.length;i++){
+    if(chordText(li,i))cells[i].classList.add("marked");else cells[i].classList.remove("marked");
+    if(state.editing&&state.editing.li===li&&state.editing.ci===i)cells[i].classList.add("cursor");else cells[i].classList.remove("cursor");
   }
 }
 
@@ -838,8 +1078,8 @@ function openChordEditor(li,ci){if(state.mode!=="chords")return;commitChord();st
 function commitChord(){
   if(!state.editing)return;
   var li=state.editing.li,ci=state.editing.ci;
-  var chr=document.getElementById("chr-"+li);
-  var inp=chr?chr.querySelector(".chord-popup"):null;
+  var lineEl=document.getElementById("lyr-"+li);
+  var inp=lineEl?lineEl.querySelector(".chord-popup"):null;
   var val=inp?inp.value.trim():"";
   var key=li+"-"+ci;
   if(val)state.chords[key]={text:val,anchor:lineAt(li)};else delete state.chords[key];
@@ -853,10 +1093,23 @@ function transposeAll(semis){
   Object.keys(state.instrumentals).forEach(function(l){state.instrumentals[l].seq=transposeSeq(state.instrumentals[l].seq,semis);});
   rebuildSheet();
 }
+function doClearAll(){
+  state.rawText="";state.chords={};state.instrumentals={};state.editing=null;state.selectedChord=null;state.charPos={};state.title="";
+  scheduleSave();
+  renderApp();
+}
 function clearAll(){
-  if((Object.keys(state.chords).length||Object.keys(state.instrumentals).length)&&window.confirm(T("confirmClear"))){
-    state.chords={};state.instrumentals={};state.editing=null;rebuildSheet();
-  }
+  var has=hasText()||Object.keys(state.chords).length||Object.keys(state.instrumentals).length;
+  if(!has){doClearAll();return;}
+  var dlg=h("div",{class:"dlg"},
+    h("div",{class:"dlg-title"},T("clear")),
+    h("p",{style:{margin:"14px 0 2px",font:"400 14px/1.55 var(--ui)",color:"var(--text)"}},T("confirmClear")),
+    h("div",{class:"dlg-actions"},
+      h("button",{class:"btn-ghost",onClick:closeOverlay},T("resetCancel")),
+      h("button",{class:"btn-primary",onClick:function(){closeOverlay();doClearAll();}},T("resetOk"))
+    )
+  );
+  showOverlay(dlg);
 }
 function addInstrumental(){
   commitChord();
@@ -965,7 +1218,7 @@ function guitarSVG(name){
   var d=GUITAR[name]||genGuitar(name);if(!d)return null;
   var W=120,H=150,padX=18,padTop=30,gw=W-padX*2,gh=100,frets=5,strings=6;
   var sx=gw/(strings-1),fy=gh/frets;
-  var ink="#1A1714",blue="#1A50D8";
+  var ink="currentColor",blue="#2f6bff";
   var svg='<svg viewBox="0 0 '+W+' '+H+'" width="110" height="138" xmlns="http://www.w3.org/2000/svg">';
   // nut o indicatore tasto base
   var base=d.base||1;
@@ -1261,51 +1514,51 @@ var I18N_EXTRA={
  it:{keyLabel:"Tonalità",hl:"Evidenzia sezioni",hlDisc:"Scrivi le sezioni tra parentesi quadre: [Verse], [Chorus], [Bridge]…",color:"Colore",
    expUG:"Esporta Ultimate Guitar",expCP:"Esporta ChordPro",find:"Sostituisci accordi",frFrom:"Da",frTo:"A",frDo:"Sostituisci tutto",frDone:"Accordi sostituiti",frNone:"Nessun accordo da sostituire",frSearch:"Cerca accordo",frPreview:"{n} accordi verranno sostituiti",close:"Chiudi",
    live:"Live",liveSpeed:"Velocità",liveBPM:"BPM (facoltativo)",sSlow:"Lenta",sMed:"Media",sFast:"Veloce",sVFast:"Molto veloce",liveStart:"Avvia",livePause:"Pausa",liveExit:"Esci",liveStop:"Stop",liveReset:"Riavvia",zoom:"Zoom",
-   vol:"Volume",arp:"Arpeggio",aFast:"Veloce",aMed:"Medio",aSlow:"Lento",dropHint:"Trascina qui un file di testo per importarlo",restored:"Sessione ripristinata",help:"Istruzioni",resetTitle:"Torna alla Home",resetMsg:"Sei sicuro di voler tornare alla Home? Tutti i progressi andranno persi.",resetOk:"Ok",resetCancel:"Annulla"},
+   vol:"Volume",arp:"Arpeggio",aFast:"Veloce",aMed:"Medio",aSlow:"Lento",dropHint:"Trascina qui un file di testo per importarlo",restored:"Sessione ripristinata",help:"Istruzioni",about:"Cos'è Chord Your Lyrics",aboutBody:"Chord Your Lyrics è nata per permettere ai cantautori di impaginare facilmente i propri testi con gli accordi, in modo semplice e senza complicazioni.",importF:"Importa file",download:"Scarica",sectionsTitle:"Sezioni della canzone",importOk:"File importato con successo",importErr:"Formato file non supportato",frSection:"Sezione",frAllDoc:"Tutto il documento",resetTitle:"Torna alla Home",resetMsg:"Sei sicuro di voler tornare alla Home? Tutti i progressi andranno persi.",resetOk:"Ok",resetCancel:"Annulla"},
  en:{keyLabel:"Key",hl:"Highlight sections",hlDisc:"Write sections in square brackets: [Verse], [Chorus], [Bridge]…",color:"Color",
    expUG:"Export Ultimate Guitar",expCP:"Export ChordPro",find:"Replace chords",frFrom:"From",frTo:"To",frDo:"Replace all",frDone:"Chords replaced",frNone:"No chords to replace",frSearch:"Search chord",frPreview:"{n} chords will be replaced",close:"Close",
    live:"Live",liveSpeed:"Speed",liveBPM:"BPM (optional)",sSlow:"Slow",sMed:"Medium",sFast:"Fast",sVFast:"Very fast",liveStart:"Start",livePause:"Pause",liveExit:"Exit",liveStop:"Stop",liveReset:"Reset",zoom:"Zoom",
-   vol:"Volume",arp:"Arpeggio",aFast:"Fast",aMed:"Medium",aSlow:"Slow",dropHint:"Drag a text file here to import it",restored:"Session restored",help:"Instructions",resetTitle:"返回主页",resetMsg:"你确定吗？所有进度都将丢失。",resetOk:"确定",resetCancel:"取消"},
+   vol:"Volume",arp:"Arpeggio",aFast:"Fast",aMed:"Medium",aSlow:"Slow",dropHint:"Drag a text file here to import it",restored:"Session restored",help:"Instructions",about:"What is Chord Your Lyrics",aboutBody:"Chord Your Lyrics was created to let songwriters easily lay out their lyrics with chords, simply and without hassle.",importF:"Import file",download:"Download",sectionsTitle:"Song sections",importOk:"File imported successfully",importErr:"Unsupported file format",frSection:"Section",frAllDoc:"Whole document",resetTitle:"Return to Home",resetMsg:"Are you sure you want to return to Home? All progress will be lost.",resetOk:"OK",resetCancel:"Cancel"},
  fr:{keyLabel:"Tonalité",hl:"Surligner les sections",hlDisc:"Écrivez les sections entre crochets : [Verse], [Chorus], [Bridge]…",color:"Couleur",
    expUG:"Exporter Ultimate Guitar",expCP:"Exporter ChordPro",find:"Remplacer les accords",frFrom:"De",frTo:"À",frDo:"Tout remplacer",frDone:"Accords remplacés",frNone:"Aucun accord à remplacer",frSearch:"Chercher un accord",frPreview:"{n} accords seront remplacés",close:"Fermer",
    live:"Live",liveSpeed:"Vitesse",liveBPM:"BPM (facultatif)",sSlow:"Lente",sMed:"Moyenne",sFast:"Rapide",sVFast:"Très rapide",liveStart:"Démarrer",livePause:"Pause",liveExit:"Quitter",liveStop:"Stop",liveReset:"Recommencer",zoom:"Zoom",
-   vol:"Volume",arp:"Arpège",aFast:"Rapide",aMed:"Moyen",aSlow:"Lent",dropHint:"Glissez un fichier texte ici pour l'importer",restored:"Session restaurée",help:"Instructions",resetTitle:"ホームに戻る",resetMsg:"よろしいですか？すべての進捗が失われます。",resetOk:"OK",resetCancel:"キャンセル"},
+   vol:"Volume",arp:"Arpège",aFast:"Rapide",aMed:"Moyen",aSlow:"Lent",dropHint:"Glissez un fichier texte ici pour l'importer",restored:"Session restaurée",help:"Instructions",about:"Qu'est-ce que Chord Your Lyrics",aboutBody:"Chord Your Lyrics est née pour permettre aux auteurs-compositeurs de mettre en page facilement leurs paroles avec les accords, simplement et sans complications.",importF:"Importer un fichier",download:"Télécharger",sectionsTitle:"Sections de la chanson",importOk:"Fichier importé avec succès",importErr:"Format de fichier non pris en charge",frSection:"Section",frAllDoc:"Tout le document",resetTitle:"Retour à l'accueil",resetMsg:"Voulez-vous vraiment revenir à l'accueil ? Tous les progrès seront perdus.",resetOk:"OK",resetCancel:"Annuler"},
  de:{keyLabel:"Tonart",hl:"Abschnitte hervorheben",hlDisc:"Schreibe Abschnitte in eckigen Klammern: [Verse], [Chorus], [Bridge]…",color:"Farbe",
    expUG:"Ultimate Guitar exportieren",expCP:"ChordPro exportieren",find:"Akkorde ersetzen",frFrom:"Von",frTo:"Zu",frDo:"Alle ersetzen",frDone:"Akkorde ersetzt",frNone:"Keine Akkorde zu ersetzen",frSearch:"Akkord suchen",frPreview:"{n} Akkorde werden ersetzt",close:"Schließen",
    live:"Live",liveSpeed:"Geschwindigkeit",liveBPM:"BPM (optional)",sSlow:"Langsam",sMed:"Mittel",sFast:"Schnell",sVFast:"Sehr schnell",liveStart:"Start",livePause:"Pause",liveExit:"Beenden",liveStop:"Stopp",liveReset:"Zurücksetzen",zoom:"Zoom",
-   vol:"Lautstärke",arp:"Arpeggio",aFast:"Schnell",aMed:"Mittel",aSlow:"Langsam",dropHint:"Textdatei hierher ziehen zum Importieren",restored:"Sitzung wiederhergestellt",help:"Anleitung",resetTitle:"Повернутися на Головну",resetMsg:"Ви впевнені? Весь прогрес буде втрачено.",resetOk:"Ok",resetCancel:"Скасувати"},
+   vol:"Lautstärke",arp:"Arpeggio",aFast:"Schnell",aMed:"Mittel",aSlow:"Langsam",dropHint:"Textdatei hierher ziehen zum Importieren",restored:"Sitzung wiederhergestellt",help:"Anleitung",about:"Was ist Chord Your Lyrics",aboutBody:"Chord Your Lyrics wurde entwickelt, damit Songwriter ihre Texte mit Akkorden einfach und unkompliziert setzen können.",importF:"Datei importieren",download:"Herunterladen",sectionsTitle:"Songabschnitte",importOk:"Datei erfolgreich importiert",importErr:"Nicht unterstütztes Dateiformat",frSection:"Abschnitt",frAllDoc:"Ganzes Dokument",resetTitle:"Zur Startseite",resetMsg:"Möchten Sie wirklich zur Startseite zurückkehren? Alle Fortschritte gehen verloren.",resetOk:"OK",resetCancel:"Abbrechen"},
  es:{keyLabel:"Tonalidad",hl:"Resaltar secciones",hlDisc:"Escribe las secciones entre corchetes: [Verse], [Chorus], [Bridge]…",color:"Color",
    expUG:"Exportar Ultimate Guitar",expCP:"Exportar ChordPro",find:"Reemplazar acordes",frFrom:"De",frTo:"A",frDo:"Reemplazar todo",frDone:"Acordes reemplazados",frNone:"No hay acordes que reemplazar",frSearch:"Buscar acorde",frPreview:"{n} acordes serán reemplazados",close:"Cerrar",
    live:"Live",liveSpeed:"Velocidad",liveBPM:"BPM (opcional)",sSlow:"Lenta",sMed:"Media",sFast:"Rápida",sVFast:"Muy rápida",liveStart:"Iniciar",livePause:"Pausa",liveExit:"Salir",liveStop:"Detener",liveReset:"Reiniciar",zoom:"Zoom",
-   vol:"Volumen",arp:"Arpegio",aFast:"Rápido",aMed:"Medio",aSlow:"Lento",dropHint:"Arrastra aquí un archivo de texto para importarlo",restored:"Sesión restaurada",help:"Instrucciones"},
+   vol:"Volumen",arp:"Arpegio",aFast:"Rápido",aMed:"Medio",aSlow:"Lento",dropHint:"Arrastra aquí un archivo de texto para importarlo",restored:"Sesión restaurada",help:"Instrucciones",about:"Qué es Chord Your Lyrics",aboutBody:"Chord Your Lyrics nació para permitir a los cantautores maquetar fácilmente sus letras con los acordes, de forma sencilla y sin complicaciones.",importF:"Importar archivo",download:"Descargar",sectionsTitle:"Secciones de la canción",importOk:"Archivo importado con éxito",importErr:"Formato de archivo no compatible",frSection:"Sección",frAllDoc:"Todo el documento",resetTitle:"Volver al inicio",resetMsg:"¿Seguro que quieres volver al inicio? Se perderá todo el progreso.",resetOk:"OK",resetCancel:"Cancelar"},
  zh:{keyLabel:"调性",hl:"高亮段落",hlDisc:"用方括号写段落：[Verse]、[Chorus]、[Bridge]…",color:"颜色",
    expUG:"导出 Ultimate Guitar",expCP:"导出 ChordPro",find:"替换和弦",frFrom:"从",frTo:"到",frDo:"全部替换",frDone:"和弦已替换",frNone:"没有可替换的和弦",frSearch:"搜索和弦",frPreview:"将替换 {n} 个和弦",close:"关闭",
    live:"现场",liveSpeed:"速度",liveBPM:"BPM（可选）",sSlow:"慢",sMed:"中",sFast:"快",sVFast:"很快",liveStart:"开始",livePause:"暂停",liveExit:"退出",liveStop:"停止",liveReset:"重置",zoom:"缩放",
-   vol:"音量",arp:"琶音",aFast:"快",aMed:"中",aSlow:"慢",dropHint:"将文本文件拖到此处导入",restored:"会话已恢复",help:"使用说明"},
+   vol:"音量",arp:"琶音",aFast:"快",aMed:"中",aSlow:"慢",dropHint:"将文本文件拖到此处导入",restored:"会话已恢复",help:"使用说明",about:"关于 Chord Your Lyrics",aboutBody:"Chord Your Lyrics 旨在让创作型歌手轻松地为歌词排版和编配和弦，简单无烦恼。",importF:"导入文件",download:"下载",sectionsTitle:"歌曲段落",importOk:"文件导入成功",importErr:"不支持的文件格式",frSection:"段落",frAllDoc:"整个文档",resetTitle:"返回主页",resetMsg:"确定要返回主页吗？所有进度都将丢失。",resetOk:"确定",resetCancel:"取消"},
  ja:{keyLabel:"調",hl:"セクションを強調",hlDisc:"セクションは角括弧で記述：[Verse]、[Chorus]、[Bridge]…",color:"色",
    expUG:"Ultimate Guitar に書き出し",expCP:"ChordPro に書き出し",find:"コードを置換",frFrom:"置換前",frTo:"置換後",frDo:"すべて置換",frDone:"コードを置換しました",frNone:"置換するコードがありません",frSearch:"コードを検索",frPreview:"{n} 個のコードが置換されます",close:"閉じる",
    live:"ライブ",liveSpeed:"速度",liveBPM:"BPM（任意）",sSlow:"遅い",sMed:"普通",sFast:"速い",sVFast:"非常に速い",liveStart:"開始",livePause:"一時停止",liveExit:"終了",liveStop:"停止",liveReset:"リセット",zoom:"ズーム",
-   vol:"音量",arp:"アルペジオ",aFast:"速い",aMed:"普通",aSlow:"遅い",dropHint:"テキストファイルをここにドラッグして読み込み",restored:"セッションを復元しました",help:"使い方"},
+   vol:"音量",arp:"アルペジオ",aFast:"速い",aMed:"普通",aSlow:"遅い",dropHint:"テキストファイルをここにドラッグして読み込み",restored:"セッションを復元しました",help:"使い方",about:"Chord Your Lyrics とは",aboutBody:"Chord Your Lyrics は、シンガーソングライターが歌詞にコードを簡単にレイアウトできるように作られました。",importF:"ファイルをインポート",download:"ダウンロード",sectionsTitle:"曲のセクション",importOk:"ファイルを読み込みました",importErr:"対応していないファイル形式です",frSection:"セクション",frAllDoc:"ドキュメント全体",resetTitle:"ホームに戻る",resetMsg:"本当にホームに戻りますか？すべての進捗が失われます。",resetOk:"OK",resetCancel:"キャンセル"},
  uk:{keyLabel:"Тональність",hl:"Підсвітити секції",hlDisc:"Пишіть секції у квадратних дужках: [Verse], [Chorus], [Bridge]…",color:"Колір",
    expUG:"Експорт Ultimate Guitar",expCP:"Експорт ChordPro",find:"Замінити акорди",frFrom:"З",frTo:"На",frDo:"Замінити всі",frDone:"Акорди замінено",frNone:"Немає акордів для заміни",frSearch:"Шукати акорд",frPreview:"{n} акордів буде замінено",close:"Закрити",
    live:"Live",liveSpeed:"Швидкість",liveBPM:"BPM (необов’язково)",sSlow:"Повільно",sMed:"Середньо",sFast:"Швидко",sVFast:"Дуже швидко",liveStart:"Старт",livePause:"Пауза",liveExit:"Вийти",liveStop:"Стоп",liveReset:"Скинути",zoom:"Масштаб",
-   vol:"Гучність",arp:"Арпеджіо",aFast:"Швидко",aMed:"Середньо",aSlow:"Повільно",dropHint:"Перетягніть сюди текстовий файл для імпорту",restored:"Сесію відновлено",help:"Інструкція"},
+   vol:"Гучність",arp:"Арпеджіо",aFast:"Швидко",aMed:"Середньо",aSlow:"Повільно",dropHint:"Перетягніть сюди текстовий файл для імпорту",restored:"Сесію відновлено",help:"Інструкція",about:"Що таке Chord Your Lyrics",aboutBody:"Chord Your Lyrics створено, щоб автори пісень могли легко верстати свої тексти з акордами — просто та без зайвих складнощів.",importF:"Імпортувати файл",download:"Завантажити",sectionsTitle:"Секції пісні",importOk:"Файл успішно імпортовано",importErr:"Непідтримуваний формат файлу",frSection:"Секція",frAllDoc:"Весь документ",resetTitle:"Повернутися на головну",resetMsg:"Ви впевнені, що хочете повернутися на головну? Весь прогрес буде втрачено.",resetOk:"OK",resetCancel:"Скасувати"},
  ru:{keyLabel:"Тональность",hl:"Подсветить секции",hlDisc:"Пишите секции в квадратных скобках: [Verse], [Chorus], [Bridge]…",color:"Цвет",
    expUG:"Экспорт Ultimate Guitar",expCP:"Экспорт ChordPro",find:"Заменить аккорды",frFrom:"С",frTo:"На",frDo:"Заменить все",frDone:"Аккорды заменены",frNone:"Нет аккордов для замены",frSearch:"Искать аккорд",frPreview:"{n} аккордов будет заменено",close:"Закрыть",
    live:"Live",liveSpeed:"Скорость",liveBPM:"BPM (необязательно)",sSlow:"Медленно",sMed:"Средне",sFast:"Быстро",sVFast:"Очень быстро",liveStart:"Старт",livePause:"Пауза",liveExit:"Выход",liveStop:"Стоп",liveReset:"Сброс",zoom:"Масштаб",
-   vol:"Громкость",arp:"Арпеджио",aFast:"Быстро",aMed:"Средне",aSlow:"Медленно",dropHint:"Перетащите сюда текстовый файл для импорта",restored:"Сессия восстановлена",help:"Инструкция"},
+   vol:"Громкость",arp:"Арпеджио",aFast:"Быстро",aMed:"Средне",aSlow:"Медленно",dropHint:"Перетащите сюда текстовый файл для импорта",restored:"Сессия восстановлена",help:"Инструкция",about:"Что такое Chord Your Lyrics",aboutBody:"Chord Your Lyrics создан, чтобы авторы песен могли легко верстать свои тексты с аккордами — просто и без лишних сложностей.",importF:"Импортировать файл",download:"Скачать",sectionsTitle:"Секции песни",importOk:"Файл успешно импортирован",importErr:"Неподдерживаемый формат файла",frSection:"Секция",frAllDoc:"Весь документ",resetTitle:"Вернуться на главную",resetMsg:"Вы уверены, что хотите вернуться на главную? Весь прогресс будет потерян.",resetOk:"OK",resetCancel:"Отмена"},
  ro:{keyLabel:"Tonalitate",hl:"Evidențiază secțiunile",hlDisc:"Scrie secțiunile în paranteze pătrate: [Verse], [Chorus], [Bridge]…",color:"Culoare",
    expUG:"Exportă Ultimate Guitar",expCP:"Exportă ChordPro",find:"Înlocuiește acordurile",frFrom:"Din",frTo:"În",frDo:"Înlocuiește tot",frDone:"Acorduri înlocuite",frNone:"Niciun acord de înlocuit",frSearch:"Caută acord",frPreview:"{n} acorduri vor fi înlocuite",close:"Închide",
    live:"Live",liveSpeed:"Viteză",liveBPM:"BPM (opțional)",sSlow:"Lentă",sMed:"Medie",sFast:"Rapidă",sVFast:"Foarte rapidă",liveStart:"Pornește",livePause:"Pauză",liveExit:"Ieși",liveStop:"Stop",liveReset:"Resetează",zoom:"Zoom",
-   vol:"Volum",arp:"Arpegiu",aFast:"Rapid",aMed:"Mediu",aSlow:"Lent",dropHint:"Trage aici un fișier text pentru a-l importa",restored:"Sesiune restaurată",help:"Instrucțiuni"},
+   vol:"Volum",arp:"Arpegiu",aFast:"Rapid",aMed:"Mediu",aSlow:"Lent",dropHint:"Trage aici un fișier text pentru a-l importa",restored:"Sesiune restaurată",help:"Instrucțiuni",about:"Ce este Chord Your Lyrics",aboutBody:"Chord Your Lyrics s-a născut pentru a le permite compozitorilor să își aranjeze ușor versurile cu acorduri, simplu și fără complicații.",importF:"Importă fișier",download:"Descarcă",sectionsTitle:"Secțiunile melodiei",importOk:"Fișier importat cu succes",importErr:"Format de fișier neacceptat",frSection:"Secțiune",frAllDoc:"Tot documentul",resetTitle:"Înapoi la pagina principală",resetMsg:"Sigur vrei să revii la pagina principală? Tot progresul va fi pierdut.",resetOk:"OK",resetCancel:"Anulează"},
  sq:{keyLabel:"Tonaliteti",hl:"Thekso seksionet",hlDisc:"Shkruaj seksionet në kllapa katrore: [Verse], [Chorus], [Bridge]…",color:"Ngjyra",
    expUG:"Eksporto Ultimate Guitar",expCP:"Eksporto ChordPro",find:"Zëvendëso akordet",frFrom:"Nga",frTo:"Në",frDo:"Zëvendëso të gjitha",frDone:"Akordet u zëvendësuan",frNone:"Asnjë akord për të zëvendësuar",frSearch:"Kërko akord",frPreview:"{n} akorde do të zëvendësohen",close:"Mbyll",
    live:"Live",liveSpeed:"Shpejtësia",liveBPM:"BPM (opsionale)",sSlow:"Ngadalë",sMed:"Mesatare",sFast:"Shpejt",sVFast:"Shumë shpejt",liveStart:"Nis",livePause:"Pauzë",liveExit:"Dil",liveStop:"Ndalo",liveReset:"Rinis",zoom:"Zmadhim",
-   vol:"Volumi",arp:"Arpexho",aFast:"Shpejt",aMed:"Mesatar",aSlow:"Ngadalë",dropHint:"Tërhiq këtu një skedar teksti për ta importuar",restored:"Sesioni u rikthye",help:"Udhëzime"},
+   vol:"Volumi",arp:"Arpexho",aFast:"Shpejt",aMed:"Mesatar",aSlow:"Ngadalë",dropHint:"Tërhiq këtu një skedar teksti për ta importuar",restored:"Sesioni u rikthye",help:"Udhëzime",about:"Çfarë është Chord Your Lyrics",aboutBody:"Chord Your Lyrics u krijua që kantautorët të faqosin lehtë tekstet e tyre me akorde, thjesht dhe pa ndërlikime.",importF:"Importo skedar",download:"Shkarko",sectionsTitle:"Seksionet e këngës",importOk:"Skedari u importua me sukses",importErr:"Format skedari i papërkrahur",frSection:"Seksioni",frAllDoc:"I gjithë dokumenti",resetTitle:"Kthehu në fillim",resetMsg:"Je i sigurt që do të kthehesh në fillim? I gjithë progresi do të humbasë.",resetOk:"OK",resetCancel:"Anulo"},
  el:{keyLabel:"Τονικότητα",hl:"Επισήμανση ενοτήτων",hlDisc:"Γράψε τις ενότητες σε αγκύλες: [Verse], [Chorus], [Bridge]…",color:"Χρώμα",
    expUG:"Εξαγωγή Ultimate Guitar",expCP:"Εξαγωγή ChordPro",find:"Αντικατάσταση συγχορδιών",frFrom:"Από",frTo:"Σε",frDo:"Αντικατάσταση όλων",frDone:"Οι συγχορδίες αντικαταστάθηκαν",frNone:"Δεν υπάρχουν συγχορδίες προς αντικατάσταση",frSearch:"Αναζήτηση συγχορδίας",frPreview:"{n} συγχορδίες θα αντικατασταθούν",close:"Κλείσιμο",
    live:"Live",liveSpeed:"Ταχύτητα",liveBPM:"BPM (προαιρετικό)",sSlow:"Αργή",sMed:"Μέτρια",sFast:"Γρήγορη",sVFast:"Πολύ γρήγορη",liveStart:"Έναρξη",livePause:"Παύση",liveExit:"Έξοδος",liveStop:"Διακοπή",liveReset:"Επαναφορά",zoom:"Ζουμ",
-   vol:"Ένταση",arp:"Άρπισμα",aFast:"Γρήγορο",aMed:"Μέτριο",aSlow:"Αργό",dropHint:"Σύρε εδώ ένα αρχείο κειμένου για εισαγωγή",restored:"Η συνεδρία επαναφέρθηκε",help:"Οδηγίες"}
+   vol:"Ένταση",arp:"Άρπισμα",aFast:"Γρήγορο",aMed:"Μέτριο",aSlow:"Αργό",dropHint:"Σύρε εδώ ένα αρχείο κειμένου για εισαγωγή",restored:"Η συνεδρία επαναφέρθηκε",help:"Οδηγίες",about:"Τι είναι το Chord Your Lyrics",aboutBody:"Το Chord Your Lyrics δημιουργήθηκε για να μπορούν οι τραγουδοποιοί να στοιχειοθετούν εύκολα τους στίχους τους με τις συγχορδίες, απλά και χωρίς περιπλοκές.",importF:"Εισαγωγή αρχείου",download:"Λήψη",sectionsTitle:"Ενότητες τραγουδιού",importOk:"Το αρχείο εισήχθη επιτυχώς",importErr:"Μη υποστηριζόμενη μορφή αρχείου",frSection:"Ενότητα",frAllDoc:"Όλο το έγγραφο",resetTitle:"Επιστροφή στην αρχική",resetMsg:"Είστε βέβαιοι ότι θέλετε να επιστρέψετε στην αρχική; Όλη η πρόοδος θα χαθεί.",resetOk:"OK",resetCancel:"Άκυρο"}
 };
 (function(){for(var L in I18N_EXTRA){if(!I18N[L])I18N[L]={};var s=I18N_EXTRA[L];for(var k in s)I18N[L][k]=s[k];}})();
 
@@ -1502,22 +1755,46 @@ function chordSet(){
   Object.keys(state.instrumentals).forEach(function(li){parseSeq(state.instrumentals[li].seq).forEach(function(t){if(t!=="|")s[t]=1;});});
   return Object.keys(s).sort();
 }
-function doReplaceAll(from,to){
+function docSectionBlocks(){
+  var lines=state.rawText.split("\n"),blocks=[],cur=null;
+  for(var i=0;i<lines.length;i++){
+    if(isSection(lines[i])){
+      if(cur){cur.end=i;blocks.push(cur);}
+      cur={label:lines[i].replace(/^\s*\[|\]\s*$/g,""),start:i,end:lines.length};
+    }
+  }
+  if(cur)blocks.push(cur);
+  return blocks;
+}
+function docSections(){
+  var seen={},out=[];
+  docSectionBlocks().forEach(function(b){if(!seen[b.label]){seen[b.label]=1;out.push(b.label);}});
+  return out;
+}
+function lineAllowed(li,label){
+  if(!label||label==="__ALL__")return true;
+  var blocks=docSectionBlocks();
+  for(var i=0;i<blocks.length;i++){if(blocks[i].label===label&&li>=blocks[i].start&&li<blocks[i].end)return true;}
+  return false;
+}
+function keyLi(k){return parseInt(k.split("-")[0],10);}
+function doReplaceAll(from,to,label){
   from=(from||"").trim();to=(to||"").trim();
   if(!from||!to)return 0;
   var n=0;
-  Object.keys(state.chords).forEach(function(k){if(state.chords[k].text===from){state.chords[k].text=to;n++;}});
+  Object.keys(state.chords).forEach(function(k){if(state.chords[k].text===from&&lineAllowed(keyLi(k),label)){state.chords[k].text=to;n++;}});
   Object.keys(state.instrumentals).forEach(function(li){
+    if(!lineAllowed(+li,label))return;
     var toks=parseSeq(state.instrumentals[li].seq),changed=false;
     toks=toks.map(function(t){if(t===from){n++;changed=true;return to;}return t;});
     if(changed)state.instrumentals[li].seq=toks.join(" ");
   });
   return n;
 }
-function countMatches(from){
+function countMatches(from,label){
   from=(from||"").trim();if(!from)return 0;var n=0;
-  Object.keys(state.chords).forEach(function(k){if(state.chords[k].text===from)n++;});
-  Object.keys(state.instrumentals).forEach(function(li){parseSeq(state.instrumentals[li].seq).forEach(function(t){if(t===from)n++;});});
+  Object.keys(state.chords).forEach(function(k){if(state.chords[k].text===from&&lineAllowed(keyLi(k),label))n++;});
+  Object.keys(state.instrumentals).forEach(function(li){if(!lineAllowed(+li,label))return;parseSeq(state.instrumentals[li].seq).forEach(function(t){if(t===from)n++;});});
   return n;
 }
 function openReplace(){
@@ -1526,19 +1803,24 @@ function openReplace(){
   existing.forEach(function(c){dl.appendChild(h("option",{value:c}));});
   var fromInp=h("input",{class:"fr-input",placeholder:existing[0]||"Am",list:"fr-chords"});
   var toInp=h("input",{class:"fr-input",placeholder:"Bm"});
+  var secSel=h("select",{class:"fr-input"});
+  secSel.appendChild(h("option",{value:"__ALL__"},T("frAllDoc")));
+  docSections().forEach(function(lbl){secSel.appendChild(h("option",{value:lbl},"["+lbl+"]"));});
   var preview=h("div",{class:"fr-preview"});
-  function upd(){var n=countMatches(fromInp.value);preview.textContent=T("frPreview").replace("{n}",n);preview.classList.toggle("none",n===0);}
+  function upd(){var n=countMatches(fromInp.value,secSel.value);preview.textContent=T("frPreview").replace("{n}",n);preview.classList.toggle("none",n===0);}
   fromInp.addEventListener("input",upd);
+  secSel.addEventListener("change",upd);
   var dlg=h("div",{class:"dlg"},
     h("div",{class:"dlg-title"},T("find")),
     h("div",{class:"fr-row"},h("label",null,T("frSearch")),fromInp),
     h("div",{class:"fr-row"},h("label",null,T("frTo")),toInp),
+    h("div",{class:"fr-row"},h("label",null,T("frSection")),secSel),
     dl,
     preview,
     h("div",{class:"dlg-actions"},
       h("button",{class:"btn-ghost",onClick:closeOverlay},T("close")),
       h("button",{class:"btn-primary",onClick:function(){
-        var n=doReplaceAll(fromInp.value,toInp.value);
+        var n=doReplaceAll(fromInp.value,toInp.value,secSel.value);
         closeOverlay();
         if(n>0){rebuildSheet();scheduleSave();flash(T("frDone"));}else flash(T("frNone"));
       }},T("frDo"))
@@ -1560,36 +1842,40 @@ function closeOverlay(){if(overlayEl&&overlayEl.parentNode)overlayEl.parentNode.
 /* --- GUIDA / ISTRUZIONI --- */
 var HELP_GUIDE={
  it:[
-  ["Due modalità","Usa le schede <b>Testo</b> e <b>Accordi</b> in alto. In <b>Testo</b> incolli o scrivi il testo della canzone; in <b>Accordi</b> lo trasformi in uno spartito interattivo."],
+  ["Due modalità","Usa le schede <b>Testo</b> e <b>Accordi</b> in alto. In <b>Testo</b> incolli o scrivi il testo della canzone (e in fondo trovi <b>Copia</b> e <b>Cancella</b>); in <b>Accordi</b> lo trasformi in uno spartito interattivo."],
+  ["Menu ≡","In alto a sinistra il menu <b>≡</b> raccoglie: <b>Cos'è Chord Your Lyrics</b>, <b>Live</b>, <b>Istruzioni</b>, <b>Importa file</b> e la scelta della <b>Lingua</b> (12 lingue)."],
   ["Inserire un accordo","Nella scheda Accordi, <b>clicca su una lettera o su uno spazio</b> del testo: sopra comparirà un campo per scrivere l'accordo. Mentre digiti compare l'<b>autocompletamento</b> (frecce + Invio, oppure mouse, per scegliere)."],
-  ["Modificare e spostare","<b>Clic singolo</b> su un accordo = modifica. <b>Tieni premuto e trascina</b> in orizzontale = sposti l'accordo carattere per carattere, mantenendo sempre l'allineamento con il testo."],
+  ["Modificare e spostare","<b>Clic singolo</b> su un accordo = modifica. <b>Tieni premuto e trascina</b> in orizzontale = sposti l'accordo, mantenendo l'allineamento con il testo."],
   ["Trasporre","I pulsanti <b>+</b> e <b>−</b> alzano o abbassano tutti gli accordi di un semitono."],
   ["Sezioni strumentali","Su una riga vuota usa <b>+ Strumentale</b> per inserire un giro di accordi senza testo (puoi separare le battute con |)."],
-  ["Diagrammi e Play","In fondo scegli se mostrare i diagrammi di <b>chitarra</b>, <b>piano</b> o entrambi. Ogni diagramma ha un pulsante <b>▶</b> che riproduce l'accordo. Se sono presenti entrambi gli strumenti, c'è un Play per ciascuno: così scegli quale ascoltare."],
-  ["Accordo pieno o arpeggio","Di default il Play suona l'<b>accordo pieno</b>. Attiva l'interruttore <b>Arpeggio</b> (nella riga dei controlli audio) per sentirlo arpeggiato; con il menu accanto regoli la velocità. Lo slider <b>Volume</b> alza o abbassa il volume del player."],
-  ["Tonalità automatica","In alto viene mostrata la <b>tonalità</b> più probabile, calcolata automaticamente dagli accordi presenti nel brano."],
-  ["Evidenziazione sezioni","Scrivi i titoli di sezione tra parentesi quadre: <b>[Intro]</b>, <b>[Verse]</b>, <b>[Chorus]</b>, <b>[Bridge]</b>… Attiva l'interruttore <b>Evidenzia sezioni</b> e scegli un colore: tutto il testo fino alla sezione successiva viene evidenziato con quel colore."],
-  ["Sostituire accordi","Con <b>Sostituisci accordi</b> cambi automaticamente un accordo con un altro in tutto il brano (es. tutti i G → G7), senza modificare il testo."],
-  ["Esportazioni","Puoi esportare in <b>.txt</b>, <b>PDF</b> (con i diagrammi), <b>Ultimate Guitar</b> e <b>ChordPro</b>, mantenendo allineamento, testo e struttura."],
-  ["Modalità Live","Il pulsante <b>▶ Live</b> apre una vista a schermo intero con scorrimento automatico: quattro velocità predefinite oppure BPM manuali (facoltativi), più lo zoom."],
-  ["Salvataggio automatico","Il lavoro viene salvato da solo nel browser: se chiudi la pagina, alla riapertura ritrovi automaticamente l'ultima versione."],
-  ["Lingua","Dal menu in alto a destra cambi la lingua dell'interfaccia (12 lingue disponibili)."]
+  ["Diagrammi e Play","In fondo scegli se mostrare i diagrammi di <b>chitarra</b>, <b>piano</b> o entrambi. Ogni diagramma ha un pulsante <b>▶</b> che riproduce l'accordo: se sono presenti entrambi gli strumenti, c'è un Play per ciascuno."],
+  ["Accordo pieno o arpeggio","Di default il Play suona l'<b>accordo pieno</b>. Attiva l'interruttore <b>Arpeggio</b> per sentirlo arpeggiato; con il menu accanto regoli la velocità. Lo slider <b>Volume</b> regola il volume del player."],
+  ["Tonalità automatica","In alto viene mostrata la <b>tonalità</b> più probabile, calcolata automaticamente dagli accordi del brano."],
+  ["Evidenziazione sezioni","Scrivi i titoli tra parentesi quadre: <b>[Intro]</b>, <b>[Verse]</b>, <b>[Pre-Chorus]</b>, <b>[Chorus]</b>, <b>[Bridge]</b>, <b>[Outro]</b>. Dal menu <b>Sezioni della canzone</b> attivi l'evidenziazione, scegli un <b>colore per ogni sezione</b> e regoli la <b>trasparenza</b>: tutto il testo fino alla sezione successiva viene colorato."],
+  ["Sostituire accordi","Con <b>Sostituisci accordi</b> cambi automaticamente un accordo con un altro, in <b>tutto il documento</b> oppure solo <b>in una sezione</b> a scelta, senza modificare il testo."],
+  ["Scarica","Dal pulsante <b>Scarica</b> esporti il brano in <b>PDF</b> (con i diagrammi) o in <b>TXT</b>, mantenendo allineamento, testo e struttura."],
+  ["Modalità Live","Da <b>≡ → Live</b> apri la vista a schermo intero con scorrimento automatico: quattro velocità <b>x1–x4</b> oppure <b>BPM</b> manuali (facoltativi), più zoom e i comandi Play/Pausa/Stop."],
+  ["Importa file","Puoi <b>trascinare</b> un file di testo nell'area di scrittura, oppure usare <b>Importa file</b> dal menu, per caricarne il contenuto."],
+  ["Modalità scura","Il pulsante <b>sole/luna</b> in basso a destra attiva la <b>modalità scura</b>; la preferenza viene ricordata."],
+  ["Salvataggio automatico","Il lavoro viene salvato da solo nel browser: se chiudi la pagina, alla riapertura ritrovi l'ultima versione."]
  ],
  en:[
-  ["Two modes","Use the <b>Text</b> and <b>Chords</b> tabs at the top. In <b>Text</b> you paste or type the song lyrics; in <b>Chords</b> you turn them into an interactive chart."],
+  ["Two modes","Use the <b>Text</b> and <b>Chords</b> tabs at the top. In <b>Text</b> you paste or type the lyrics (with <b>Copy</b> and <b>Clear</b> at the bottom); in <b>Chords</b> you turn them into an interactive chart."],
+  ["Menu ≡","Top-left, the <b>≡</b> menu holds: <b>What is Chord Your Lyrics</b>, <b>Live</b>, <b>Instructions</b>, <b>Import file</b> and the <b>Language</b> picker (12 languages)."],
   ["Add a chord","In the Chords tab, <b>click on a letter or a space</b> in the lyrics: a field appears above it to type the chord. As you type, an <b>autocomplete</b> list shows up (arrows + Enter, or mouse, to pick)."],
-  ["Edit and move","A <b>single click</b> on a chord = edit. <b>Press and drag</b> horizontally = move the chord character by character, always keeping it aligned with the lyrics."],
+  ["Edit and move","A <b>single click</b> on a chord = edit. <b>Press and drag</b> horizontally = move the chord, keeping it aligned with the lyrics."],
   ["Transpose","The <b>+</b> and <b>−</b> buttons raise or lower every chord by one semitone."],
   ["Instrumental sections","On an empty line use <b>+ Instrumental</b> to add a chord progression with no lyrics (separate bars with |)."],
-  ["Diagrams and Play","At the bottom choose whether to show <b>guitar</b>, <b>piano</b> or both diagrams. Each diagram has a <b>▶</b> button that plays the chord. When both instruments are shown, there is one Play for each, so you choose which to hear."],
-  ["Full chord or arpeggio","By default Play sounds the <b>full chord</b>. Turn on the <b>Arpeggio</b> switch (in the audio controls row) to hear it arpeggiated; the menu next to it sets the speed. The <b>Volume</b> slider raises or lowers the player volume."],
-  ["Automatic key","The most likely <b>key</b> is shown at the top, calculated automatically from the chords in the song."],
-  ["Section highlighting","Write section titles in square brackets: <b>[Intro]</b>, <b>[Verse]</b>, <b>[Chorus]</b>, <b>[Bridge]</b>… Turn on the <b>Highlight sections</b> switch and pick a color: all the text up to the next section is highlighted with it."],
-  ["Replace chords","With <b>Replace chords</b> you automatically swap one chord for another across the whole song (e.g. all G → G7), without changing the lyrics."],
-  ["Exports","You can export to <b>.txt</b>, <b>PDF</b> (with diagrams), <b>Ultimate Guitar</b> and <b>ChordPro</b>, keeping alignment, lyrics and structure."],
-  ["Live mode","The <b>▶ Live</b> button opens a full-screen view with auto-scroll: four preset speeds or manual BPM (optional), plus zoom."],
-  ["Auto-save","Your work is saved automatically in the browser: if you close the page, the latest version is restored when you reopen it."],
-  ["Language","Use the menu at the top right to change the interface language (12 available)."]
+  ["Diagrams and Play","At the bottom choose <b>guitar</b>, <b>piano</b> or both diagrams. Each diagram has a <b>▶</b> button that plays the chord; when both instruments are shown there is one Play for each."],
+  ["Full chord or arpeggio","By default Play sounds the <b>full chord</b>. Turn on the <b>Arpeggio</b> switch to hear it arpeggiated; the menu next to it sets the speed. The <b>Volume</b> slider sets the player volume."],
+  ["Automatic key","The most likely <b>key</b> is shown at the top, computed from the chords in the song."],
+  ["Section highlighting","Write titles in square brackets: <b>[Intro]</b>, <b>[Verse]</b>, <b>[Pre-Chorus]</b>, <b>[Chorus]</b>, <b>[Bridge]</b>, <b>[Outro]</b>. From the <b>Song sections</b> menu you enable highlighting, pick a <b>colour per section</b> and adjust <b>transparency</b>: all text up to the next section is tinted."],
+  ["Replace chords","With <b>Replace chords</b> you swap one chord for another, across the <b>whole document</b> or only within a chosen <b>section</b>, without changing the lyrics."],
+  ["Download","The <b>Download</b> button exports the song to <b>PDF</b> (with diagrams) or <b>TXT</b>, keeping alignment, lyrics and structure."],
+  ["Live mode","From <b>≡ → Live</b> open the full-screen view with auto-scroll: four speeds <b>x1–x4</b> or manual <b>BPM</b> (optional), plus zoom and Play/Pause/Stop."],
+  ["Import file","You can <b>drag</b> a text file onto the writing area, or use <b>Import file</b> from the menu, to load its content."],
+  ["Dark mode","The <b>sun/moon</b> button at the bottom-right toggles <b>dark mode</b>; your choice is remembered."],
+  ["Auto-save","Your work is saved automatically in the browser: if you close the page, the latest version is restored when you reopen it."]
  ]
 };
 function openHelp(){
@@ -1616,8 +1902,8 @@ function openHelp(){
 
 /* --- MODALITÀ LIVE --- */
 var liveRAF=null,liveScroller=null,livePlaying=false,liveSpeedPx=21,liveZoom=1.3;
-var LIVE_PXPERBEAT=30;
-function liveSpeedFromBPM(bpm){return Math.max(4,Math.min(400,(bpm/60)*LIVE_PXPERBEAT));}
+var LIVE_PXPERBEAT=10; /* px per beat: 1 riga di testo ≈ 1 battuta (4 beat) → scorrimento naturale */
+function liveSpeedFromBPM(bpm){return Math.max(2,Math.min(200,(bpm/60)*LIVE_PXPERBEAT));}
 function openLive(){
   commitChord();
   var sheet=document.getElementById("sheet");
